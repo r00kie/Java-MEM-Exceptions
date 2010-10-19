@@ -17,7 +17,9 @@ import org.apache.commons.io.IOUtils;
  * @author nagash
  */
 abstract class AbstractMemException extends RuntimeException {
-
+  
+  private String cachedImage = null;
+  
   public AbstractMemException(Throwable cause) {
     super(cause);
   }
@@ -46,16 +48,19 @@ abstract class AbstractMemException extends RuntimeException {
   }
   
   protected String loadFile(String filename) {
-    StringBuilder sb = new StringBuilder("\n");
-    InputStream resourceAsStream = this.getClass().getClassLoader().getResourceAsStream(filename);
-    try {
-      sb.append(IOUtils.toString(resourceAsStream));
-    } catch (IOException ex) {
-      ex.printStackTrace();
+    if (cachedImage == null) {
+      StringBuilder sb = new StringBuilder("\n");
+      InputStream resourceAsStream = this.getClass().getClassLoader().getResourceAsStream(filename);
+      try {
+        sb.append(IOUtils.toString(resourceAsStream));
+      } catch (IOException ex) {
+        ex.printStackTrace();
+      }    
+      sb.append("\n");
+      cachedImage = sb.toString();
     }
     
-    sb.append("\n");
-    return sb.toString();
+    return cachedImage;
     
   }
   
